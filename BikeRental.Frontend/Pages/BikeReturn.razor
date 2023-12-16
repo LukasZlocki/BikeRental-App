@@ -1,0 +1,84 @@
+﻿@page "/bicyclereturn"
+@using BikeRental.Frontend.Models;
+
+@inject HttpClient http
+@inject NavigationManager Navigation
+
+<PageTitle>Return bicycle</PageTitle>
+
+<h1>Bike return</h1>
+
+@if (reservations == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Customer Name</th>
+                <th>Customer ID card</th>
+                <th>Rent day</th>
+                <th>Bicycle Model</th>
+                <th>Serian number</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reservation in reservations)
+            {
+                <tr>
+                    <td>@reservation.FirstName</td>
+                    <td>@reservation.IdSerial</td>
+                    <td>@reservation.ReservationDate</td>
+                    <td>@reservation.Bicycle.ModelName</td>
+                    <td>@reservation.Bicycle.SerialNumber</td>
+                    <td><button class="btn btn-success" @onclick="@(() => ReturnThisBike(reservation))">Return Bike</button></td>
+                    <td><button class="btn btn-warning" @onclick="@(() => ReturnBikeAndSendToService(reservation))">Return & Service</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    private List<ReservationTicket> reservations;
+
+    private async Task ReturnThisBike(ReservationTicket reservation)
+    {
+        reservation.Bicycle.IsAvailable = true;
+        reservation.Bicycle.IsInService = false;
+        reservation.Bicycle.IsRent = false;
+        // Update db
+        var responseBicycle = await http.PatchAsJsonAsync($"http://backend-api:80/api/bike/update", reservation.Bicycle);
+        // close reservation ticket
+        var responseReservation = await http.DeleteAsync($"http://backend-api:80/api/reservationticket/close/" + reservation.Id);
+        if (responseBicycle.IsSuccessStatusCode && responseReservation.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/bicyclereturn", true);
+        }
+    }
+
+    private async Task ReturnBikeAndSendToService(ReservationTicket reservation)
+    {
+        reservation.Bicycle.IsAvailable = false;
+        reservation.Bicycle.IsInService = true;
+        reservation.Bicycle.IsRent = false;
+        // Update db
+        var responseBicycle = await http.PatchAsJsonAsync($"http://backend-api:80/api/bike/update", reservation.Bicycle);
+        // close reservation ticket
+        var responseReservation = await http.DeleteAsync($"http://backend-api:80/api/reservationticket/close/" + reservation.Id);
+
+        if (responseBicycle.IsSuccessStatusCode && responseReservation.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/bicyclereturn", true);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // ask endpoint for bicycle thet are already rented
+        reservations = await http.GetFromJsonAsync<List<ReservationTicket>>("http://backend-api:80/api/reservationticket");
+    }
+}

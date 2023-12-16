@@ -1,0 +1,106 @@
+﻿@page "/rentit/{id:int}"
+
+@using BikeRental.Frontend.Models
+
+@inject HttpClient http
+@inject NavigationManager Navigation
+
+<h3>BikeRent</h3>
+
+<form>
+    <fieldset disabled>
+        <legend>Rent a bike form</legend>
+        <div class="mb-3">
+            <label for="disabledTextInput" class="form-label">Bicycle type:</label>
+            <input type="text" id="disabledTextInput" class="form-control" placeholder="@category.Type">
+        </div>
+        <div class="mb-3">
+            <label for="disabledTextInput" class="form-label">Bicycle model:</label>
+            <input type="text" id="disabledTextInput" class="form-control" placeholder="@bicycle.ModelName">
+        </div>
+        <div class="mb-3">
+            <label for="disabledTextInput" class="form-label">Frame size:</label>
+            <input type="text" id="disabledTextInput" class="form-control" placeholder="@framesize.Size">
+        </div>
+        <div class="mb-3">
+            <label for="disabledTextInput" class="form-label">Bicycle serial number:</label>
+            <input type="text" id="disabledTextInput" class="form-control" placeholder="@bicycle.SerialNumber">
+        </div>
+    </fieldset>
+</form>
+
+<form class="row g-3 needs-validation" novalidate>
+  <div class="col-md-4">
+    <label for="validationCustom01" class="form-label">First name</label>
+        <input type="text" class="form-control" id="validationCustom01" @bind="reservation.FirstName"  required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  <div class="col-md-4">
+    <label for="validationCustom02" class="form-label">Last name</label>
+        <input type="text" class="form-control" id="validationCustom02" @bind="reservation.LastName" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  <div class="col-md-6">
+    <label for="validationCustom03" class="form-label">ID nummber</label>
+        <input type="text" class="form-control" id="validationCustom03" @bind="reservation.IdSerial" required>
+    <div class="invalid-feedback">
+      Please provide a valid city.
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+      <label class="form-check-label" for="invalidCheck">
+        Agree to terms and conditions
+      </label>
+      <div class="invalid-feedback">
+        You must agree before submitting.
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+        <button class="btn btn-success" @onclick="MakeReservation" type="submit">Reservation</button>
+  </div>
+</form>
+
+@code {
+    [Parameter]
+    public int Id { get; set; } // bicycle primary key
+
+    Bicycle bicycle = new();
+    Category category = new();
+    FrameSize framesize = new();
+
+    ReservationTicket reservation = new();
+
+    private async Task MakeReservation()
+    {
+        reservation.BicycleId = bicycle.Id;
+        reservation.ReservationDate = DateTime.UtcNow;
+
+        bicycle.IsAvailable = false;
+        bicycle.IsRent = true;
+
+        // create reservation
+        var responseReservationCreate = await http.PostAsJsonAsync<ReservationTicket>("http://backend-api:80/api/reservationticket/create", reservation);
+        // if reservation create true
+        if (responseReservationCreate.IsSuccessStatusCode)
+        {
+            // Update bike data
+            var responseBikeUpdate = await http.PatchAsJsonAsync($"http://backend-api:80/api/bike/update", bicycle);
+        }
+
+        Navigation.NavigateTo("/bicyclesforrent", true);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        bicycle = await http.GetFromJsonAsync<Bicycle>("http://backend-api:80/api/bike/" + Id);
+        category = await http.GetFromJsonAsync<Category>("http://backend-api:80/api/category/" + bicycle.CategoryId);
+        framesize = await http.GetFromJsonAsync<FrameSize>("http://backend-api:80/api/framesize/" + bicycle.FrameSizeId);
+    }
+}

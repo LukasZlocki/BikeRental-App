@@ -1,0 +1,9 @@
+version: '3.4'
+services:
+  frontend-app:
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"

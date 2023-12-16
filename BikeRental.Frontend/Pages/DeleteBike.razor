@@ -1,0 +1,61 @@
+﻿@page "/deletebicycle"
+
+@using BikeRental.Frontend.Models;
+
+@inject HttpClient http;
+@inject NavigationManager Navigation
+
+
+<PageTitle>Bike scrap</PageTitle>
+
+<h1>Scrapping bicycles</h1>
+
+@if (bicycles == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Model</th>
+                <th>Frame size</th>
+                <th>Serian number</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bicycle in bicycles)
+            {
+                <tr>
+                    <td>@bicycle.Category.Type</td>
+                    <td>@bicycle.ModelName</td>
+                    <td>@bicycle.FrameSize.Size</td>
+                    <td>@bicycle.SerialNumber</td>
+                    <td><button class="btn btn-danger" @onclick="@(() => DeleteThisBike(bicycle.Id))">Scrapp bike</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    List<Bicycle> bicycles;
+
+    private async Task DeleteThisBike(int id)
+    {
+        var deleteResponse = await http.DeleteAsync("http://backend-api:80/api/bike/remove/" + id);
+
+        if (deleteResponse.IsSuccessStatusCode == true)
+        {
+            Navigation.NavigateTo("/service", true);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        bicycles = await http.GetFromJsonAsync<List<Bicycle>>("http://backend-api:80/api/service");
+    }
+}

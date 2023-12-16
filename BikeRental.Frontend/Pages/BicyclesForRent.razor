@@ -1,0 +1,69 @@
+﻿@page "/bicyclesforrent"
+@using BikeRental.Frontend.Models
+
+@inject HttpClient http
+@inject NavigationManager Navigation
+
+<PageTitle>Bicycles for rent</PageTitle>
+
+<h1>Bicycles ready to rent</h1>
+
+@if (bicycles == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Model</th>
+                <th>Frame size</th>
+                <th>Serian number</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bicycle in bicycles)
+            {
+                <tr>
+                    <td>@bicycle.Category.Type</td>
+                    <td>@bicycle.ModelName</td>
+                    <td>@bicycle.FrameSize.Size</td>
+                    <td>@bicycle.SerialNumber</td>
+                    <td><button class="btn btn-success" @onclick="@(() => ReserveThisBike(bicycle))">Reserve</button></td>
+                    <td><button class="btn btn-warning" @onclick="@(() => SendBicycleToService(bicycle))">Send to service</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Bicycle> bicycles;
+
+    private async Task SendBicycleToService(Bicycle bicycle)
+    {
+        bicycle.IsAvailable = false;
+        bicycle.IsInService = true;
+
+        var response = await http.PatchAsJsonAsync($"http://backend-api:80/api/service/done", bicycle);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/bicyclesforrent", true);
+        }
+    }
+
+    private async Task ReserveThisBike(Bicycle bicycle)
+    {
+        int id = bicycle.Id;
+        Navigation.NavigateTo("/rentit/" + bicycle.Id, true);
+        //Navigation.NavigateTo("/rentit", true);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        bicycles = await http.GetFromJsonAsync<List<Bicycle>>("http://backend-api:80/api/bike/rent");
+    }
+}

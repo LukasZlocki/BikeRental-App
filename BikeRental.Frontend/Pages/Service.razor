@@ -1,0 +1,75 @@
+﻿@page "/service"
+@using BikeRental.Frontend.Models
+
+@inject HttpClient http
+@inject NavigationManager Navigation
+
+<PageTitle>Bicycles service room</PageTitle>
+
+<h1>Bicycles service</h1>
+<td><button class="btn btn-secondary" @onclick="@(() => SendToFormularWithImplementationOfNewBicycle())">Add new bicycle</button></td>
+<td><button class="btn btn-secondary" @onclick="@(() => SendToFormularWithDeletionOfBicycle())">Scrap bicycle</button></td>
+
+@if (bicycles == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Model</th>
+                <th>Serial number</th>
+                <th>Frame size</th>
+                <th>Service day</th>
+                <th>Service performed</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bicycle in bicycles)
+            {
+                <tr>
+                    <td>@bicycle.ModelName</td>
+                    <td>@bicycle.SerialNumber</td>
+                    <td>@bicycle.FrameSize.Size</td>
+                    <td>@bicycle.StartService</td>
+                    <td><button class="btn btn-success" @onclick="@(() => BicycleServisedAndReadyForRent(bicycle))">Serviced</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Bicycle> bicycles;
+
+    private async Task BicycleServisedAndReadyForRent(Bicycle bicycle) 
+    {
+        bicycle.IsAvailable = true;
+        bicycle.IsInService = false;
+        bicycle.StartService = DateTime.UtcNow.AddDays(30);
+
+        var response = await http.PatchAsJsonAsync($"http://backend-api:80/api/service/done", bicycle);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/service", true);
+        }
+    }
+
+    private async Task SendToFormularWithImplementationOfNewBicycle()
+    {
+        Navigation.NavigateTo("/newbicycle", true);
+    }
+
+    private async Task SendToFormularWithDeletionOfBicycle()
+    {
+        Navigation.NavigateTo("/deletebicycle", true);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        bicycles = await http.GetFromJsonAsync<List<Bicycle>>("http://backend-api:80/api/service");
+    }
+}
