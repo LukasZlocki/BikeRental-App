@@ -6,7 +6,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-new
 WORKDIR /app
 
 # Copy the solution file and restore dependencies
-COPY BikeRental.sln .
+COPY BikeRental.Api.sln .
 COPY BikeRental.Api/BikeRental.Api.csproj ./BikeRental.Api/
 COPY BikeRental.Models/BikeRental.Models.csproj ./BikeRental.Models/
 COPY BikeRental.Services/BikeRental.Services.csproj ./BikeRental.Services/

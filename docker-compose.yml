@@ -22,8 +22,9 @@ services:
       - "8080:80"
     depends_on:
       - ms-sql-server
+
   frontend-app:
-    container_name: fronend-app
+    container_name: frontend-app
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       ASPNETCORE_HTTP_PORT: "https://+:8081"
