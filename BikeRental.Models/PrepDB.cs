@@ -17,6 +17,17 @@ namespace BikeRental.Models{
         {
             System.Console.WriteLine("Appling migrations...");
             context.Database.Migrate();
+
+            if (!context.FrameSizes.Any())
+            {
+                System.Console.WriteLine("Adding data: Frame sizes - seeding ...");
+                context.FrameSizes.AddRange(
+                    new Models.FrameSize() { Size = 16},
+                    new Models.FrameSize() { Size = 18 },
+                    new Models.FrameSize() { Size = 20 },
+                    new Models.FrameSize() { Size = 21 }
+                    );
+            }
         }
     }
 }
