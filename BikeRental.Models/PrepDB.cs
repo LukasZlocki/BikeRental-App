@@ -27,6 +27,7 @@ namespace BikeRental.Models{
                     new Models.FrameSize() { Size = 20 },
                     new Models.FrameSize() { Size = 21 }
                     );
+                context.SaveChanges();
             }
             else
             {
@@ -42,6 +43,7 @@ namespace BikeRental.Models{
                     new Models.Category() { Type = "Kids" },
                     new Models.Category() { Type = "BMX" }
                     );
+                context.SaveChanges();
             }
             else
             {
@@ -64,7 +66,7 @@ namespace BikeRental.Models{
                     },
                     new Models.Bicycle()
                     {
-                        CategoryId = 0,
+                        CategoryId = 2,
                         ModelName = "Giant MTB",
                         FrameSizeId = 2,
                         SerialNumber = "B0002",
@@ -73,6 +75,7 @@ namespace BikeRental.Models{
                         IsInService = false,
                         IsRent = false
                     });
+                context.SaveChanges();
             }
             else
             {

@@ -44,6 +44,9 @@ app.MapGet("/", () =>
     return "Hello, from Backend!";
 });
 
+// auto seeding database if no data included in db.
+PrepDB.PrepPopulation(app);
+
 //app.UseHttpsRedirection();
 
 app.UseAuthorization();
