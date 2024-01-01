@@ -28,6 +28,10 @@ namespace BikeRental.Models{
                     new Models.FrameSize() { Size = 21 }
                     );
             }
+            else
+            {
+                System.Console.WriteLine("Frame size data exist - no need to seed.");
+            }
 
             if (!context.Categorys.Any())
             {
@@ -38,6 +42,10 @@ namespace BikeRental.Models{
                     new Models.Category() { Type = "Kids" },
                     new Models.Category() { Type = "BMX" }
                     );
+            }
+            else
+            {
+                System.Console.WriteLine("Categories data exist - no need to seed.");
             }
 
             if (!context.Bicycles.Any())
@@ -65,6 +73,10 @@ namespace BikeRental.Models{
                         IsInService = false,
                         IsRent = false
                     });
+            }
+            else
+            {
+                System.Console.WriteLine("Bicycles data exist - no need to seed.");
             }
         }
     }
