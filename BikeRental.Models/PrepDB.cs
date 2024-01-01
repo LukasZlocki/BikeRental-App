@@ -28,6 +28,44 @@ namespace BikeRental.Models{
                     new Models.FrameSize() { Size = 21 }
                     );
             }
+
+            if (!context.Categorys.Any())
+            {
+                System.Console.WriteLine("Adding data: Categories - seeding ...");
+                context.Categorys.AddRange(
+                    new Models.Category() { Type = "MTB" },
+                    new Models.Category() { Type = "Gravel" },
+                    new Models.Category() { Type = "Kids" },
+                    new Models.Category() { Type = "BMX" }
+                    );
+            }
+
+            if (!context.Bicycles.Any())
+            {
+                System.Console.WriteLine("Adding data: Bicycles - seeding ...");
+                context.Bicycles.AddRange(
+                    new Models.Bicycle() { 
+                        CategoryId = 1, 
+                        ModelName = "Giant Graverel",
+                        FrameSizeId = 1,
+                        SerialNumber = "B0001",
+                        StartService = DateTime.Parse("2023.12.12"),
+                        IsAvailable = false,
+                        IsInService = true,
+                        IsRent = false
+                    },
+                    new Models.Bicycle()
+                    {
+                        CategoryId = 0,
+                        ModelName = "Giant MTB",
+                        FrameSizeId = 2,
+                        SerialNumber = "B0002",
+                        StartService = DateTime.Parse("2023.12.12"),
+                        IsAvailable = true,
+                        IsInService = false,
+                        IsRent = false
+                    });
+            }
         }
     }
 }
