@@ -1,6 +1,7 @@
 using BikeRental.Api.Hubs;
 using BikeRental.Models;
 using BikeRental.Services.Resource_Service;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +55,11 @@ PrepDB.PrepPopulation(app);
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapPost("broadcast", async (string message, IHubContext<ChatHub, IChatClient> context) =>
+{
+    await context.Clients.All.ReceiveMessage(message);
+    return Results.NoContent();
+});
 
 app.MapHub<ChatHub>("chat-hub");
 
