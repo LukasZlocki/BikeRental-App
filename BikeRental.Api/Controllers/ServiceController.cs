@@ -1,6 +1,9 @@
-﻿using BikeRental.Models.Models;
+﻿using BikeRental.Api.Hubs;
+using BikeRental.Models.Models;
 using BikeRental.Services.Resource_Service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using System;
 
 namespace BikeRental.Api.Controllers
 {
@@ -8,10 +11,12 @@ namespace BikeRental.Api.Controllers
     public class ServiceController : Controller
     {
         private readonly ResourceService _dbResource;
+        private readonly IHubContext<NotificationsHub, INotificationClient> _context;
 
-        public ServiceController(ResourceService dbResource)
+        public ServiceController(ResourceService dbResource, IHubContext<NotificationsHub, INotificationClient> context)
         {
             _dbResource = dbResource;
+            _context = context;
         }
 
         // GET
@@ -26,10 +31,13 @@ namespace BikeRental.Api.Controllers
 
         // PATCH
         [HttpPatch("api/service/done")]
-        public IActionResult FinishBicycleServiceByBicycleId([FromBody] Bicycle bicycle)
+        public  IActionResult FinishBicycleServiceByBicycleId([FromBody] Bicycle bicycle)
         {
-            var service = _dbResource.UpdateBikeData(bicycle);
-            return Ok(service);
+            // add signalR message - service done
+            _context.Clients.All.ReceiveNotification($"UpdateAvailableList");
+            // var service = _dbResource.UpdateBikeData(bicycle);
+            //return Ok(service);
+            return Ok();
         }
 
         // POST

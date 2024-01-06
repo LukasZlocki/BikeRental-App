@@ -1,5 +1,6 @@
 ﻿@page "/bicyclesforrent"
 @using BikeRental.Frontend.Models
+@using Microsoft.AspNetCore.SignalR.Client;
 
 @inject HttpClient http
 @inject NavigationManager Navigation
@@ -42,6 +43,10 @@ else
 @code {
     private List<Bicycle> bicycles;
 
+    private HubConnection? _hubConnection;
+    private readonly List<string> _messages = new();
+    string _message;
+
     private async Task SendBicycleToService(Bicycle bicycle)
     {
         bicycle.IsAvailable = false;
@@ -55,6 +60,11 @@ else
         }
     }
 
+    private async Task RefreshThisPage()
+    {
+        Navigation.NavigateTo("/bicyclesforrent", true);
+    }
+
     private async Task ReserveThisBike(Bicycle bicycle)
     {
         int id = bicycle.Id;
@@ -64,6 +74,24 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        bicycles = await http.GetFromJsonAsync<List<Bicycle>>("http://backend-api:80/api/bike/rent");
+        //bicycles = await http.GetFromJsonAsync<List<Bicycle>>("http://backend-api:80/api/bike/rent");
+        bicycles = await http.GetFromJsonAsync<List<Bicycle>>("https://localhost:7052/api/bike/rent");
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7052/notifications")
+                .Build();
+        _hubConnection.On<string>("ReceiveNotification", message =>
+        {
+            _message = message;
+            _messages.Add(message);
+            InvokeAsync(StateHasChanged);
+            if (_message == "UpdateAvailableList")
+            {
+                RefreshThisPage();
+            }
+
+        });
+
+        await _hubConnection.StartAsync();
     }
 }
