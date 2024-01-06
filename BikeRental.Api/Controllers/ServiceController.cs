@@ -30,6 +30,22 @@ namespace BikeRental.Api.Controllers
         }
 
         // PATCH
+        [HttpPatch("api/service/toservice")]
+        public IActionResult SendBicycleToService([FromBody] Bicycle bicycle)
+        {
+            bicycle.IsAvailable = false;
+            bicycle.IsInService = true;
+            bicycle.IsRent = false;
+
+            var service = _dbResource.UpdateBikeData(bicycle);
+
+            // Add client side message - update service page
+            _context.Clients.All.ReceiveNotification($"RefreshServicePage");
+
+            return Ok(service);
+        }
+
+        // PATCH
         [HttpPatch("api/service/done")]
         public  IActionResult FinishBicycleServiceByBicycleId([FromBody] Bicycle bicycle)
         {

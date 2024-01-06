@@ -52,8 +52,9 @@ else
 
 @code {
     private List<Bicycle> bicycles;
+
     private HubConnection? _hubConnection;
-    private readonly List<string> _messages = new();
+    string _message;
 
     private async Task BicycleServisedAndReadyForRent(Bicycle bicycle) 
     {
@@ -61,12 +62,11 @@ else
         bicycle.IsInService = false;
         bicycle.StartService = DateTime.UtcNow.AddDays(30);
 
-        //var response = await http.PatchAsJsonAsync($"http://backend-api:80/api/service/done", bicycle);
-        var response = await http.PatchAsJsonAsync($"https://localhost:7052/api/service/done", bicycle);
+        var response = await http.PatchAsJsonAsync($"http://backend-api:80/api/service/done", bicycle);
 
         if (response.IsSuccessStatusCode)
         {
-            Navigation.NavigateTo("/service", true);
+            RefreshThisPage();
         }
     }
 
@@ -80,19 +80,26 @@ else
         Navigation.NavigateTo("/deletebicycle", true);
     }
 
+    private async Task RefreshThisPage()
+    {
+        Navigation.NavigateTo("/service", true);
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        //bicycles = await http.GetFromJsonAsync<List<Bicycle>>("http://backend-api:80/api/service");
-        bicycles = await http.GetFromJsonAsync<List<Bicycle>>("https://localhost:7052/api/service");
+        bicycles = await http.GetFromJsonAsync<List<Bicycle>>("http://backend-api:80/api/service");
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7052/notifications")
+            .WithUrl("http://backend-api:80/notifications")
                 .Build();
         _hubConnection.On<string>("ReceiveNotification", message =>
-        { 
-            _messages.Add(message);
+        {
+            _message = message;
             InvokeAsync(StateHasChanged);
-
+            if (_message == "RefreshServicePage")
+            {
+                RefreshThisPage();
+            }
         });
         await _hubConnection.StartAsync();
     }
