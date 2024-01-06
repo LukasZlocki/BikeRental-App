@@ -1,3 +1,4 @@
+using BikeRental.Api;
 using BikeRental.Api.Hubs;
 using BikeRental.Models;
 using BikeRental.Services.Resource_Service;
@@ -13,6 +14,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
+builder.Services.AddHostedService<ServerTimeNotifier>();
+builder.Services.AddCors();
 
 // Configuration
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
@@ -39,6 +42,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
 // maping hosted port for docker purpose
 app.MapGet("/", () =>
 {
@@ -62,5 +67,6 @@ app.MapPost("broadcast", async (string message, IHubContext<ChatHub, IChatClient
 });
 
 app.MapHub<ChatHub>("chat-hub");
+app.MapHub<NotificationsHub>("notifications");
 
 app.Run();
