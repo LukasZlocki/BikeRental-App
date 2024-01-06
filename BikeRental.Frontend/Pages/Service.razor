@@ -8,13 +8,6 @@
 
 <PageTitle>Bicycles service room</PageTitle>
 
-<ul>
-    @foreach (var message in _messages)
-    {
-        <li>@message</li>
-    }
-</ul>
-
 <h1>Bicycles service</h1>
 <td><button class="btn btn-secondary" @onclick="@(() => SendToFormularWithImplementationOfNewBicycle())">Add new bicycle</button></td>
 <td><button class="btn btn-secondary" @onclick="@(() => SendToFormularWithDeletionOfBicycle())">Scrap bicycle</button></td>
