@@ -49,11 +49,17 @@ namespace BikeRental.Api.Controllers
         [HttpPatch("api/service/done")]
         public  IActionResult FinishBicycleServiceByBicycleId([FromBody] Bicycle bicycle)
         {
-            // add signalR message - service done
-            _context.Clients.All.ReceiveNotification($"UpdateAvailableList");
-            // var service = _dbResource.UpdateBikeData(bicycle);
-            //return Ok(service);
-            return Ok();
+            bicycle.IsAvailable = true;
+            bicycle.IsInService = false;
+            bicycle.IsRent = false;
+            bicycle.StartService = DateTime.UtcNow.AddDays(30);
+
+            var service = _dbResource.UpdateBikeData(bicycle);
+
+            // add signalR message - update rental page
+            _context.Clients.All.ReceiveNotification($"UpdateRentalPage");
+
+            return Ok(service);
         }
 
         // POST

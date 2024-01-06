@@ -58,10 +58,6 @@ else
 
     private async Task BicycleServisedAndReadyForRent(Bicycle bicycle) 
     {
-        bicycle.IsAvailable = true;
-        bicycle.IsInService = false;
-        bicycle.StartService = DateTime.UtcNow.AddDays(30);
-
         var response = await http.PatchAsJsonAsync($"http://backend-api:80/api/service/done", bicycle);
 
         if (response.IsSuccessStatusCode)
