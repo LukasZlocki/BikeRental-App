@@ -1,5 +1,8 @@
 ﻿@page "/bicyclesforrent"
 @using BikeRental.Frontend.Models
+@using Microsoft.AspNetCore.SignalR.Client;
+
+@implements IAsyncDisposable;
 
 @inject HttpClient http
 @inject NavigationManager Navigation
@@ -42,6 +45,9 @@ else
 @code {
     private List<Bicycle> bicycles;
 
+    private HubConnection? _hubConnection;
+    private string _message;
+
     private async Task SendBicycleToService(Bicycle bicycle)
     {
         bicycle.IsAvailable = false;
@@ -55,6 +61,11 @@ else
         }
     }
 
+    private async Task RefreshThisPage()
+    {
+        Navigation.NavigateTo("/bicyclesforrent", true);
+    }
+
     private async Task ReserveThisBike(Bicycle bicycle)
     {
         int id = bicycle.Id;
@@ -65,5 +76,28 @@ else
     protected override async Task OnInitializedAsync()
     {
         bicycles = await http.GetFromJsonAsync<List<Bicycle>>("http://backend-api:80/api/bike/rent");
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("http://backend-api:80/notifications")
+                .Build();
+        _hubConnection.On<string>("ReceiveNotification", message =>
+        {
+            _message = message;
+            InvokeAsync(StateHasChanged);
+            if (_message == "UpdateRentalPage")
+            {
+                RefreshThisPage();
+            }
+
+        });
+        await _hubConnection.StartAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
     }
 }

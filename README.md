@@ -1,6 +1,7 @@
 # BikeRental-App
 Web application dedicated to handling and managing of bike rental service.
 
+
 ## General Information
 
 The idea of the project appeared in my and my friends heads during one of conversation we had.
@@ -14,14 +15,42 @@ This repo is clone of the part of the project I was responsible for and it was d
 The orginal project link you can find below:
 https://github.com/Chmurower/bike-rental
 
+
 ## Technologies Used
 
 * C#
-* .NET 7.0
-* Blazor 
-* MS SQL
+* .NET 8.0
+* Blazor
+* Razor
+* MSSQL
+* SignalR
 * Docker
 * docker-compose
+* data base seeding
+
+
+## Features
+
+* Creating new bike in data base.
+* Rent a bike.
+* Send bike to service for repair.
+* Send bike from service to shop
+* Scrap bike by its deletion in database.
+* Auto refreshing data on page (service page / rental shop page) by SignalR
+
+
+# Prerequisities
+To build project you need to :
+* Install docker desktop
+* Clone this repository
+* In terminal write: docker compose up
+You can play with app basis on auto seeded data.
+
+
+## Screenshot
+
+Example of Bike Rental frontend.
+![]! Frontend_1.jpg
 
 
 ## Creator

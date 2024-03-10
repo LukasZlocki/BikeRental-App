@@ -1,5 +1,7 @@
 ﻿@page "/service"
 @using BikeRental.Frontend.Models
+@using Microsoft.AspNetCore.SignalR.Client;
+@implements IAsyncDisposable;
 
 @inject HttpClient http
 @inject NavigationManager Navigation
@@ -44,17 +46,16 @@ else
 @code {
     private List<Bicycle> bicycles;
 
+    private HubConnection? _hubConnection;
+    string _message;
+
     private async Task BicycleServisedAndReadyForRent(Bicycle bicycle) 
     {
-        bicycle.IsAvailable = true;
-        bicycle.IsInService = false;
-        bicycle.StartService = DateTime.UtcNow.AddDays(30);
-
         var response = await http.PatchAsJsonAsync($"http://backend-api:80/api/service/done", bicycle);
 
         if (response.IsSuccessStatusCode)
         {
-            Navigation.NavigateTo("/service", true);
+            RefreshThisPage();
         }
     }
 
@@ -68,8 +69,35 @@ else
         Navigation.NavigateTo("/deletebicycle", true);
     }
 
+    private async Task RefreshThisPage()
+    {
+        Navigation.NavigateTo("/service", true);
+    }
+
     protected override async Task OnInitializedAsync()
     {
         bicycles = await http.GetFromJsonAsync<List<Bicycle>>("http://backend-api:80/api/service");
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("http://backend-api:80/notifications")
+                .Build();
+        _hubConnection.On<string>("ReceiveNotification", message =>
+        {
+            _message = message;
+            InvokeAsync(StateHasChanged);
+            if (_message == "RefreshServicePage")
+            {
+                RefreshThisPage();
+            }
+        });
+        await _hubConnection.StartAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if(_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
     }
 }
