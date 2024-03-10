@@ -50,7 +50,7 @@ You can play with app basis on auto seeded data.
 ## Screenshot
 
 Example of Bike Rental frontend.
-![]! Frontend_1.jpg
+![] (Frontend_1.jpg)
 
 
 ## Creator
