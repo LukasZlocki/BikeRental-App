@@ -50,10 +50,7 @@ else
 
     private async Task SendBicycleToService(Bicycle bicycle)
     {
-        bicycle.IsAvailable = false;
-        bicycle.IsInService = true;
-
-        var response = await http.PatchAsJsonAsync($"http://backend-api:80/api/service/done", bicycle);
+        var response = await http.PatchAsJsonAsync($"http://backend-api:80/api/service/toservice", bicycle);
 
         if (response.IsSuccessStatusCode)
         {
