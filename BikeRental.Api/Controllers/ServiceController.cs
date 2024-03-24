@@ -40,7 +40,7 @@ namespace BikeRental.Api.Controllers
             var service = _dbResource.UpdateBikeData(bicycle);
 
             // Add client side message - update service page
-            _context.Clients.All.ReceiveNotification($"RefreshServicePage");
+            _context.Clients.All.ReceiveNotification($"UpdateServicePage");
 
             return Ok(service);
         }
