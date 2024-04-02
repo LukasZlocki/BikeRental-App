@@ -32,8 +32,8 @@ https://github.com/Chmurower/bike-rental
 
 ## Technologies - implementation ToDo:
 
-*ASP.Net Identity - for users identification & authentication
-*Terraform for Azure deployment
+* ASP.Net Identity - for users identification & authentication
+* Terraform for Azure deployment
 
 
 ## Features
@@ -51,8 +51,8 @@ To build project you need to :
 * Install docker desktop
 * Clone this repository
 * In terminal write: 
-    docker compose build
-    docker compose up
+    * docker compose build
+    * docker compose up
 You can play with app basis on auto seeded data.
 
 
