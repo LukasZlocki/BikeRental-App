@@ -23,10 +23,17 @@ https://github.com/Chmurower/bike-rental
 * Blazor
 * Razor
 * MSSQL
+* Entity Framework
 * SignalR
 * Docker
 * docker-compose
-* data base seeding
+* data base auto seeding
+
+
+## Technologies - implementation ToDo:
+
+*ASP.Net Identity - for users identification & authentication
+*Terraform for Azure deployment
 
 
 ## Features
@@ -43,7 +50,9 @@ https://github.com/Chmurower/bike-rental
 To build project you need to :
 * Install docker desktop
 * Clone this repository
-* In terminal write: docker compose up
+* In terminal write: 
+    docker compose build
+    docker compose up
 You can play with app basis on auto seeded data.
 
 
@@ -51,6 +60,9 @@ You can play with app basis on auto seeded data.
 
 Example of Bike Rental frontend.
 ![](Frontend_1.jpg)
+
+Example of Bike Rental backend api endpoints.
+![](BikeRentalApi_jpg.jpg)
 
 
 ## Creator
