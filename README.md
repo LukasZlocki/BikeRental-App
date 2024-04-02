@@ -52,7 +52,7 @@ To build project you need to :
 * Clone this repository
 * In terminal write: 
     * docker compose build
-    * docker compose up
+    * docker compose up\
 You can play with app basis on auto seeded data.
 
 
